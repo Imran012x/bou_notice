@@ -5,7 +5,7 @@ from scraper import scrape_notices
 app = Flask(__name__)
 
 # Define the API route for scraping
-@app.route('/api/notices', methods=['POST'])
+@app.route('/api/notices', methods=['GET'])
 def get_notices():
     notices_data = scrape_notices()
     return jsonify(notices_data)
