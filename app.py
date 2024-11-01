@@ -1,7 +1,5 @@
-# app.py
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from scraper import scrape_notices
-import os
 
 app = Flask(__name__)
 
@@ -9,9 +7,11 @@ app = Flask(__name__)
 @app.route('/')
 def index():
    return "Notice Board"# Define the API route for scraping
-@app.route('/api/notices', methods=['GET'])
-def get_notices():
-    notices_data = scrape_notices()
+   
+@app.route('/api/notices/<int:page>', methods=['GET'])
+def get_notices(page):
+    section = request.args.get('section')
+    notices_data = scrape_notices(section, page)
     return jsonify(notices_data)
 
 if __name__ == '__main__':
