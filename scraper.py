@@ -24,42 +24,30 @@ def scrape_notices(section, page, start_serial=1):
     notices = []
     serial_number = start_serial  # Start from the provided serial number
 
-    if section == 'Admissionmore':
-        rows = soup.select("body > section:nth-child(4) > div > table > tbody > tr")
-        for row in rows:
+    # Common row selection for Admissionmore and Exammore
+    rows_common = soup.select("body > section:nth-child(4) > div > table > tbody > tr")
+    rows_regi_result = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
+
+    if section in ['Admissionmore', 'Exammore']:
+        for row in rows_common:
             date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
             title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
             link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
-            #notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
+            # Create OrderedDict with serial as the first key
             notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
             serial_number += 1  # Increment the serial number
 
-    elif section == 'Exammore':
-        rows = soup.select("body > section:nth-child(4) > div > table > tbody > tr")
-        for row in rows:
+    elif section in ['Regimore', 'Resultmore']:
+        for row in rows_regi_result:
             date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
             title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
             link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
-            notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
-            serial_number += 1  # Increment the serial number
-
-    elif section == 'Regimore':
-        rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
-        for row in rows:
-            date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
-            title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
-            link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
-            notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
-            serial_number += 1  # Increment the serial number
-
-    elif section == 'Resultmore':
-        rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
-        for row in rows:
-            date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
-            title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
-            link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
+            # Create OrderedDict with serial as the first key
             notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
             serial_number += 1  # Increment the serial number
 
     return notices
-    #return json.dumps(notices) # Use indent for pretty-printing  
+
+# Example of usage
+# notices = scrape_notices('Admissionmore', 2, start_serial=5)  # Example call for the second page
+# print(json.dumps(notices, indent=2))
