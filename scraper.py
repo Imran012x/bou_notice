@@ -57,9 +57,3 @@ def scrape_notices(section, page):
             notices.append({"title": title, "link": link})
 
     return notices
-
-# Example usage
-if __name__ == "__main__":
-    # Change section and page as needed
-    data = scrape_notices('Exammore', 1)
-    print(data)
