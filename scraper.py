@@ -23,7 +23,7 @@ def scrape_notices(section, page, start_serial=1):
             link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
         
         notices.append([
-            ("serial", serial_number),
+            ("serial", serial),
             ("date", date),
             ("title", title),
             ("link", link)
