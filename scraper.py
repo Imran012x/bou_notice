@@ -27,7 +27,5 @@ def scrape_notices(section, page, start_serial=1):
             ("date", date),
             ("title", title),
             ("link", link)
-        ],)
-        serial_number = int(serial_number) + 1  # Increment for the next row if not specified in table
-
+        ])
     return notices
