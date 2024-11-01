@@ -3,10 +3,7 @@ from bs4 import BeautifulSoup
 from collections import OrderedDict
 import json
 
-# Initialize a global serial number tracker
-serial_tracker = {}
-
-def scrape_notices(section, page, start_serial=None):
+def scrape_notices(section, page):
     base_url = "https://www.bou.ac.bd/NoticeBoard/"
     section_urls = {
         'Admissionmore': f"{base_url}Admissionmore?page={page}",
@@ -26,34 +23,29 @@ def scrape_notices(section, page, start_serial=None):
     soup = BeautifulSoup(response.content, 'html.parser')
     notices = []
 
-    # Use a global tracker to retain the last serial across multiple calls to this function
-    if section not in serial_tracker:
-        serial_tracker[section] = start_serial if start_serial is not None else 1
-    serial_number = serial_tracker[section]
-
-    # Define row selection based on the section
-    rows = []
+    # Define row selection based on the section type
     if section in ['Admissionmore', 'Exammore']:
         rows = soup.select("body > section:nth-child(4) > div > table > tbody > tr")
     elif section in ['Regimore', 'Resultmore']:
         rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
+    else:
+        return {"error": "Invalid section provided."}
 
-    # Scrape each row
+    # Scrape each row and build the notice dictionary
     for row in rows:
+        serial = row.select_one("th, td:nth-child(1)")  # First column for serial number
+        serial_number = serial.get_text(strip=True) if serial else "N/A"
         date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
         title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
         link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
-        # Create OrderedDict with serial as the first key to enforce JSON order
-        notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
-        serial_number += 1  # Increment the serial number for the next notice
-
-    # Update the serial tracker for the next page call
-    serial_tracker[section] = serial_number
+        
+        # Append each notice with serial number as the first field
+        notices.append(OrderedDict([
+            ("serial", serial_number),
+            ("date", date),
+            ("title", title),
+            ("link", link)
+        ]))
 
     return notices
 
-# Example usage for two pages
-# first_page_notices = scrape_notices('Admissionmore', 1)
-# second_page_notices = scrape_notices('Admissionmore', 2)
-# all_notices = first_page_notices + second_page_notices
-# print(json.dumps(all_notices, indent=2))
