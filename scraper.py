@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-def scrape_notices(section, page):
+def scrape_notices(section, page, start_serial=1):
     base_url = "https://www.bou.ac.bd/NoticeBoard/"
     section_urls = {
         'Admissionmore': f"{base_url}Admissionmore?page={page}",
@@ -20,7 +20,7 @@ def scrape_notices(section, page):
 
     soup = BeautifulSoup(response.content, 'html.parser')
     notices = []
-    serial_number = 1  # Initialize the serial number
+    serial_number = start_serial  # Start from the provided serial number
 
     if section == 'Admissionmore':
         rows = soup.select("body > section:nth-child(4) > div > table > tbody > tr")
@@ -28,7 +28,8 @@ def scrape_notices(section, page):
             date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
             title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
             link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
-            notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
+            #notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
+            notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
             serial_number += 1  # Increment the serial number
 
     elif section == 'Exammore':
@@ -37,7 +38,7 @@ def scrape_notices(section, page):
             date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
             title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
             link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
-            notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
+            notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
             serial_number += 1  # Increment the serial number
 
     elif section == 'Regimore':
@@ -46,7 +47,7 @@ def scrape_notices(section, page):
             date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
             title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
             link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
-            notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
+            notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
             serial_number += 1  # Increment the serial number
 
     elif section == 'Resultmore':
@@ -55,7 +56,7 @@ def scrape_notices(section, page):
             date = row.select_one("td:nth-child(3)").get_text(strip=True) if row.select_one("td:nth-child(3)") else "N/A"
             title = row.select_one("td:nth-child(2)").get_text(strip=True) if row.select_one("td:nth-child(2)") else "N/A"
             link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
-            notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
+            notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
             serial_number += 1  # Increment the serial number
 
     return notices
