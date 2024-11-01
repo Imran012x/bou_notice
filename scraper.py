@@ -1,58 +1,65 @@
-# scraper.py
 import requests
 from bs4 import BeautifulSoup
-import json
-import time
 
-# Base URLs for the four sections
-urls = {
-    "Admissionmore": "https://www.bou.ac.bd/NoticeBoard/Admissionmore",
-    "Exammore": "https://www.bou.ac.bd/NoticeBoard/Exammore",
-    "Regimore": "https://www.bou.ac.bd/NoticeBoard/Regimore",
-    "Resultmore": "https://www.bou.ac.bd/NoticeBoard/Resultmore"
-}
+def scrape_notices(section, page):
+    base_url = "https://www.bou.ac.bd/NoticeBoard/"
+    
+    # Map the section to the appropriate URL
+    section_urls = {
+        'Admissionmore': f"{base_url}Admissionmore?page={page}",
+        'Exammore': f"{base_url}Exammore?page={page}",
+        'Regimore': f"{base_url}Regimore?page={page}",
+        'Resultmore': f"{base_url}Resultmore?page={page}"
+    }
+    
+    # Fetch the page content
+    url = section_urls.get(section)
+    if not url:
+        return {"error": "Invalid section provided."}
 
-# CSS Selectors for title and download link
-title_selector = "td:nth-child(2) a"        # Selector for title link
-download_selector = "td:nth-child(4) a"     # Selector for download link
+    response = requests.get(url)
+    if response.status_code != 200:
+        return {"error": "Failed to retrieve data."}
 
-# Function to scrape a single page and extract notices
-def scrape_notices():
-    notices_data = {}
+    soup = BeautifulSoup(response.content, 'html.parser')
+    notices = []
 
-    # Loop through each section and scrape the first three pages
-    for section, base_url in urls.items():
-        section_notices = []
+    # Debugging: Print the HTML content to see what's fetched
+    print(soup.prettify())  # This will help you see the actual content being scraped
 
-        for page in range(1, 4):  # Pages 1 to 3
-            page_url = f"{base_url}?page={page}"
-            response = requests.get(page_url)
+    # Adjust selectors based on the section
+    if section == 'Admissionmore':
+        rows = soup.select("body > section:nth-child(4) > div > table > tbody > tr")
+        for row in rows:
+            title = row.select_one("td:nth-child(2)").get_text(strip=True)
+            link = row.select_one("td:nth-child(4) a")['href']
+            notices.append({"title": title, "link": link})
 
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.content, 'html.parser')
-                rows = soup.select("section:nth-child(4) > div > div > table > tbody > tr")
+    elif section == 'Exammore':
+        rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
+        for row in rows:
+            title = row.select_one("td:nth-child(2)").get_text(strip=True)
+            link = row.select_one("td:nth-child(4) a")['href']
+            notices.append({"title": title, "link": link})
 
-                for row in rows:
-                    notice = {}
+    elif section == 'Regimore':
+        rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
+        for row in rows:
+            title = row.select_one("td:nth-child(2)").get_text(strip=True)
+            link = row.select_one("td:nth-child(4) a")['href']
+            notices.append({"title": title, "link": link})
 
-                    # Get title and link
-                    title_tag = row.select_one(title_selector)
-                    if title_tag:
-                        notice["title"] = title_tag.text.strip()
-                    
-                    download_link_tag = row.select_one(download_selector)
-                    if download_link_tag:
-                        download_link = download_link_tag.get("href")
-                        if download_link and not download_link.startswith("http"):
-                            download_link = "https://www.bou.ac.bd" + download_link
-                        notice["download_link"] = download_link
+    elif section == 'Resultmore':
+        rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
+        for row in rows:
+            title = row.select_one("td:nth-child(2)").get_text(strip=True)
+            link = row.select_one("td:nth-child(4) a")['href']
+            notices.append({"title": title, "link": link})
 
-                    if "title" in notice and "download_link" in notice:
-                        section_notices.append(notice)
-            
-            time.sleep(1)  # Delay to prevent overloading the server
+    return notices
 
-        notices_data[section] = section_notices
-
-    return notices_data
-
+# Example usage
+if __name__ == "__main__":
+    # Change section and page as needed
+    data = scrape_notices('Exammore', 1)
+    print(data)
