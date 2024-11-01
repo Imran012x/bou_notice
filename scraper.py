@@ -61,5 +61,5 @@ def scrape_notices(section, page, start_serial=1):
             notices.append(OrderedDict([("serial", serial_number), ("date", date), ("title", title), ("link", link)]))
             serial_number += 1  # Increment the serial number
 
-    #return notices
-    return json.dumps(notices) # Use indent for pretty-printing  
+    return notices
+    #return json.dumps(notices) # Use indent for pretty-printing  
