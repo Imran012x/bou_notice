@@ -30,7 +30,7 @@ def scrape_notices(section, page):
         
         # Append the notice with the actual serial from the page
         notices.append(OrderedDict([
-            ("serial", serial_text),
+            ("acc", serial_text),
             ("date", date),
             ("title", title),
             ("link", link)
