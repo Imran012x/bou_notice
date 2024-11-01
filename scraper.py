@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 
 def scrape_notices(section, page):
     base_url = "https://www.bou.ac.bd/NoticeBoard/"
-    
-    # Map the section to the appropriate URL
     section_urls = {
         'Admissionmore': f"{base_url}Admissionmore?page={page}",
         'Exammore': f"{base_url}Exammore?page={page}",
@@ -12,7 +10,6 @@ def scrape_notices(section, page):
         'Resultmore': f"{base_url}Resultmore?page={page}"
     }
     
-    # Fetch the page content
     url = section_urls.get(section)
     if not url:
         return {"error": "Invalid section provided."}
@@ -24,36 +21,40 @@ def scrape_notices(section, page):
     soup = BeautifulSoup(response.content, 'html.parser')
     notices = []
 
-    # Debugging: Print the HTML content to see what's fetched
-    print(soup.prettify())  # This will help you see the actual content being scraped
-
-    # Adjust selectors based on the section
     if section == 'Admissionmore':
         rows = soup.select("body > section:nth-child(4) > div > table > tbody > tr")
         for row in rows:
+            serial_number = row.select_one("td:nth-child(1)").get_text(strip=True)
+            date = row.select_one("td:nth-child(3)").get_text(strip=True)
             title = row.select_one("td:nth-child(2)").get_text(strip=True)
             link = row.select_one("td:nth-child(4) a")['href']
-            notices.append({"title": title, "link": link})
+            notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
 
     elif section == 'Exammore':
-        rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
+        rows = soup.select("body > section:nth-child(4) > div > table > tbody > tr")
         for row in rows:
+            serial_number = row.select_one("td:nth-child(1)").get_text(strip=True)
+            date = row.select_one("td:nth-child(3)").get_text(strip=True)
             title = row.select_one("td:nth-child(2)").get_text(strip=True)
             link = row.select_one("td:nth-child(4) a")['href']
-            notices.append({"title": title, "link": link})
+            notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
 
     elif section == 'Regimore':
         rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
         for row in rows:
+            serial_number = row.select_one("td:nth-child(1)").get_text(strip=True)
+            date = row.select_one("td:nth-child(3)").get_text(strip=True)
             title = row.select_one("td:nth-child(2)").get_text(strip=True)
             link = row.select_one("td:nth-child(4) a")['href']
-            notices.append({"title": title, "link": link})
+            notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
 
     elif section == 'Resultmore':
         rows = soup.select("body > section:nth-child(4) > div > div > table > tbody > tr")
         for row in rows:
+            serial_number = row.select_one("td:nth-child(1)").get_text(strip=True)
+            date = row.select_one("td:nth-child(3)").get_text(strip=True)
             title = row.select_one("td:nth-child(2)").get_text(strip=True)
             link = row.select_one("td:nth-child(4) a")['href']
-            notices.append({"title": title, "link": link})
+            notices.append({"serial": serial_number, "date": date, "title": title, "link": link})
 
     return notices
