@@ -1,6 +1,7 @@
 # app.py
 from flask import Flask, jsonify
 from scraper import scrape_notices
+import os
 
 app = Flask(__name__)
 
