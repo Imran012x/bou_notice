@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from collections import OrderedDict
 
 def scrape_notices(section, page, start_serial=1):
     base_url = "https://www.bou.ac.bd/NoticeBoard/"
