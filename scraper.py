@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from collections import OrderedDict
 import json
 
 def scrape_notices(section, page, start_serial=1):
@@ -23,12 +22,12 @@ def scrape_notices(section, page, start_serial=1):
         else:
             link = row.select_one("td:nth-child(4) a")['href'] if row.select_one("td:nth-child(4) a") else "N/A"
         
-        notices.append(OrderedDict([
+        notices.append([
             ("serial", serial_number),
             ("date", date),
             ("title", title),
             ("link", link)
-        ]))
+        ],)
         serial_number = int(serial_number) + 1  # Increment for the next row if not specified in table
 
     return notices
