@@ -55,7 +55,3 @@ def scrape_notices(section, page, start_serial=1):
         serial_number = int(serial_number) + 1  # Increment serial manually for next entry
 
     return notices
-
-# Example usage
-page_1_notices = scrape_notices('Exammore', 1)
-print(json.dumps(page_1_notices, indent=2))
