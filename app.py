@@ -11,7 +11,7 @@ def index():
 @app.route('/api/notices/<int:page>', methods=['GET'])
 def get_notices(page):
     section = request.args.get('section')
-    notices_data = scraper(section, page)
+    notices_data = scrape_notices(section, page)
     return jsonify(notices_data)
 
 if __name__ == '__main__':
