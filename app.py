@@ -5,6 +5,9 @@ from scraper import scrape_notices
 app = Flask(__name__)
 
 # Define the API route for scraping
+@app.route('/)
+def index():
+   return "Notice Board"# Define the API route for scraping
 @app.route('/api/notices', methods=['GET'])
 def get_notices():
     notices_data = scrape_notices()
